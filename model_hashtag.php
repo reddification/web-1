@@ -6,16 +6,10 @@
  * Date: 05.03.2017
  * Time: 14:28
  */
-class model_Hashtag extends Model_Base
+class Hashtag
 {
 
     public $indicies = array();
     public $text = "";
 
-    public function fieldsTable()
-    {
-        return array(
-            // здесь тоже лучше не забыть все описать
-        );
-    }
 }

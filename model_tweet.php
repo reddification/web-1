@@ -6,7 +6,7 @@
  * Date: 05.03.2017
  * Time: 14:13
  */
-class model_Tweet Extends Model_Base
+class Tweet
 {
     public $contributors;
 public $coordinates;
@@ -43,11 +43,4 @@ public $withheld_in_countries;
 public $withheld_scope;
     // далее описать все остальные поля сущности
 
-    public function fieldsTable()
-    {
-        return array(
-            'id' => 'Id',
-            // здесь тоже лучше не забыть все описать
-        );
-    }
 }

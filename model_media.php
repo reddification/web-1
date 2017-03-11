@@ -6,7 +6,7 @@
  * Date: 05.03.2017
  * Time: 16:18
  */
-class model_Media extends Model_Base
+class Media
 {
 
     public $display_url;
@@ -21,11 +21,4 @@ class model_Media extends Model_Base
     public $source_status_id_str;
     public $type;
     public $url;
-
-    public function fieldsTable()
-    {
-        return array(
-            // здесь тоже лучше не забыть все описать
-        );
-    }
 }

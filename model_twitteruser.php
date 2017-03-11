@@ -6,7 +6,7 @@
  * Date: 04.03.2017
  * Time: 5:49
  */
-class model_TwitterUser Extends Model_Base
+class TwitterUser
 {
     public $contributors_enabled;
     public $created_at;
@@ -53,13 +53,5 @@ class model_TwitterUser Extends Model_Base
     public $withheld_scope;
 
     // далее описать все остальные поля сущности
-
-    public function fieldsTable()
-    {
-        return array(
-            'id' => 'Id',
-            // здесь тоже лучше не забыть все описать
-        );
-    }
 }
 ?>
