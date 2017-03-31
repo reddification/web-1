@@ -1,5 +1,5 @@
 <p>
-    <span class="label label-default"> А ещё можешь подписаться на вот этих уродов: </span>
+    <span class="label label-default"> А ещё можешь подписаться на вот этих славных ребят: </span>
     <span class="label label-primary"><?= count($twitterUser->advices) ?> </span>
 </p>
 <hr/>
