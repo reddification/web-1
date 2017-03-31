@@ -38,8 +38,6 @@ class Utils
             case "get":
                 break;
             case "put":
-                //это вообще хуй знает зачем. не put request, а загрузка файла
-//                curl_setopt($ch,CURLOPT_PUT,true);
                 break;
             case "delete":
                 break;
