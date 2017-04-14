@@ -3,9 +3,9 @@
  require_once('Common_Functions.php');
  
  session_start();
- $C_K = "afwN96bvfI01Q4C8TTc3SnTK2";
- $SC_K = "3i79sEvWxg3DJwnEJMjAfDZ6BAIsnIcUd3hhV66fpfphoqZnfr";
- 
+ $C_K = "CONSUMER KEY";
+ $SC_K = "SECRET CONSUMER";
+  //error_log("[start test]", 3, "my-errors.log");
     if (!empty($_GET['denied']))
             die('Пользователь отменил авторизацию. [ouath_start_test]');
     
