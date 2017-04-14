@@ -1,24 +1,25 @@
-﻿ <?php
+ <?php
  require_once('ouath TEST.php');
  require_once('Common_Functions.php');
  
  session_start();
- $conn = new OAuthTwitter();
+ $C_K = "afwN96bvfI01Q4C8TTc3SnTK2";
+ $SC_K = "3i79sEvWxg3DJwnEJMjAfDZ6BAIsnIcUd3hhV66fpfphoqZnfr";
  
     if (!empty($_GET['denied']))
-            die('Пользователь отменил авторизацию.');
+            die('Пользователь отменил авторизацию. [ouath_start_test]');
     
     elseif (empty($_GET['oauth_token']) || empty($_GET['oauth_verifier']))
-           $conn->goToAuth("http://site.local/ouath_start_test.php","ВАШ КОНСЬЮМЕР КЕЙ","ВАШ СЕКРЕТ КОНСЬЮМЕР КЕЙ",false);
+           OAuthTwitter::goToAuth("http://site.local/ouath_start_test.php", $C_K, $SC_K, false);
     
     else {
-        if (!$conn->get_OAuthToken(trim($_GET['oauth_token']), trim($_GET['oauth_verifier']), "http://site.local/ouath_start_test.php","ВАШ КОНСЬЮМЕР КЕЙ","ВАШ СЕКРЕТ КОНСЬЮМЕР КЕЙ",false))
-            die('Произошла ошибка в процессе получения разрешения доступа к Access_Token.');
-        
-        elseif(!$conn->get_AcessToken(false, "ВАШ КОНСЬЮМЕР КЕЙ","ВАШ СЕКРЕТ КОНСЬЮМЕР КЕЙ"))
-            die('Произошла ошибка в процессе получения Access_Token.');
-        
+        if (!OAuthTwitter::get_OAuthToken(trim($_GET['oauth_token']), trim($_GET['oauth_verifier']), "http://site.local/ouath_start_test.php", $C_K, $SC_K, false))
+            die('Произошла ошибка в процессе получения разрешения доступа к Access_Token. [ouath_start_test]');
+        //elseif(!$conn->get_AcessToken(false, $C_K, $SC_K))
+           // die('Произошла ошибка в процессе получения Access_Token. [ouath_start_test]');
         else
-            echo 'ENGLISH MAFAKA DO YOU SPEAK IT';
+        {
+            Utils::redirect('http://site.local/Info_Functions.php');//здесь вытащить все переменные из сессии и сохранить их (аксес кей\мб бериар) и завершить сессию
+        }
     }
  ?>
