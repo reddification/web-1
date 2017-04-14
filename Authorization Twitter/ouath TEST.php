@@ -7,7 +7,7 @@ class OAuthTwitter {
         $oauth_nonce = md5(uniqid(rand(), true));
         $oauth_timestamp = time();
         $Utils = new Utils;
-        
+          //error_log("[go to auth]", 3, "my-errors.log");
         $oauth_base_text = "POST&" .
             urlencode($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_REQUEST_TOKEN"]) . "&" .
             urlencode(
@@ -42,14 +42,13 @@ class OAuthTwitter {
 
         $_SESSION['oauth_token_secret'] = $result['oauth_token_secret'];
         Utils::redirect($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_AUTHORIZE"] . '?oauth_token=' . $result['oauth_token']);
-        return true;
     }
     
     public function get_OAuthToken($OAuth_Token, $OAuth_Verifier, $URL_CALLBACK, $CONSUMER_KEY, $CONSUMER_SECRET, $CURLOPT_SSL) {
         $oauth_nonce = md5(uniqid(rand(), true));
         $oauth_timestamp = time();
         $Utils = new Utils;
-        
+          //error_log("[get oauth token]", 3, "my-errors.log");
         $oauth_base_text = "POST&" .
             urlencode($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_ACCESS_TOKEN"]). "&" .
             urlencode(
