@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once('Common_Functions.php');
 session_start();
 $Utils = new Utils;
@@ -11,8 +11,9 @@ $Utils = new Utils;
         {
             case 'User_Retweet, User_Favorites, User_Mentions':
             {
-                $CONSUMER = Array("KEY" => "afwN96bvfI01Q4C8TTc3SnTK2", "SECRET_KEY" => "3i79sEvWxg3DJwnEJMjAfDZ6BAIsnIcUd3hhV66fpfphoqZnfr");
-                
+                $CONSUMER = Array("KEY" => "", 
+                "SECRET_KEY" => "");
+                  //error_log("[info function]", 3, "my-errors.log");
                 $result = $Utils->GET_API_TWITTER("URL_USER_SHOW", false, $CONSUMER, true);
                 print_r($result);
             }
