@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once('Common_Functions.php');
 
 class OAuthTwitter {
@@ -6,8 +6,10 @@ class OAuthTwitter {
     public function goToAuth($URL_CALLBACK, $CONSUMER_KEY, $CONSUMER_SECRET, $CURLOPT_SSL) {
         $oauth_nonce = md5(uniqid(rand(), true));
         $oauth_timestamp = time();
+        $Utils = new Utils;
+        
         $oauth_base_text = "POST&" .
-            urlencode(TWITTER_API_GetULR("URL_REQUEST_TOKEN")) . "&" .
+            urlencode($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_REQUEST_TOKEN"]) . "&" .
             urlencode(
                 "oauth_callback=" . urlencode($URL_CALLBACK) . "&" .
                 "oauth_consumer_key=" . $CONSUMER_KEY . "&" .
@@ -18,7 +20,7 @@ class OAuthTwitter {
             );
 
         $key = $CONSUMER_SECRET . "&";
-        $oauth_signature = $this->encode($oauth_base_text, $key);
+        $oauth_signature = $Utils->encode($oauth_base_text, $key);
         
         $postfields = 'oauth_callback=' . urlencode($URL_CALLBACK); 
         $postfields .= '&oauth_consumer_key=' . $CONSUMER_KEY;
@@ -28,35 +30,28 @@ class OAuthTwitter {
         $postfields .= '&oauth_timestamp=' . $oauth_timestamp;
         $postfields .= '&oauth_version=1.0';
         
-        $response = cUrl_Initialize($postfields,$CURLOPT_SSL,TWITTER_API_GetULR("URL_REQUEST_TOKEN"),null,false);
+        $response = $Utils->cUrl_SEND_REQUEST($postfields,$CURLOPT_SSL,$Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_REQUEST_TOKEN"],null,false,true);
         
         if (!$response)
             return false;
-            
+        
         parse_str($response, $result);
         print_r($result);
         if (empty($result['oauth_token_secret']))
             return false;   
 
         $_SESSION['oauth_token_secret'] = $result['oauth_token_secret'];
-        
-        //preg_match('/oauth_token=[^&]*/', $response, $matches);
-        //Utils::redirect(TWITTER_API_GetULR("URL_AUTHORIZE") . '?oauth_token=' . str_replace("oauth_token=", "", $matches[0]));
-        Utils::redirect(TWITTER_API_GetULR("URL_AUTHORIZE") . '?oauth_token=' . $result['oauth_token']);
+        Utils::redirect($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_AUTHORIZE"] . '?oauth_token=' . $result['oauth_token']);
         return true;
-    }
-
-    private function encode($string, $key) {
-        return base64_encode(hash_hmac("sha1", $string, $key, true));
     }
     
     public function get_OAuthToken($OAuth_Token, $OAuth_Verifier, $URL_CALLBACK, $CONSUMER_KEY, $CONSUMER_SECRET, $CURLOPT_SSL) {
         $oauth_nonce = md5(uniqid(rand(), true));
         $oauth_timestamp = time();
-        $oauth_token_secret = $_SESSION['oauth_token_secret'];
-
+        $Utils = new Utils;
+        
         $oauth_base_text = "POST&" .
-            urlencode(TWITTER_API_GetULR("URL_ACCESS_TOKEN")) . "&" .
+            urlencode($Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_ACCESS_TOKEN"]). "&" .
             urlencode(
                 "oauth_consumer_key=" . $CONSUMER_KEY . "&" .
                 "oauth_nonce=" . $oauth_nonce . "&" .
@@ -67,8 +62,8 @@ class OAuthTwitter {
                 "oauth_version=1.0"
             );
 
-        $key = $CONSUMER_SECRET . "&" . $oauth_token_secret;
-        $oauth_signature = $this->encode($oauth_base_text, $key);
+        $key = $CONSUMER_SECRET . "&" . $_SESSION['oauth_token_secret'];
+        $oauth_signature = $Utils->encode($oauth_base_text, $key);
         
         $postfields = 'oauth_consumer_key=' . $CONSUMER_KEY ; 
         $postfields .= '&oauth_nonce=' . $oauth_nonce; 
@@ -79,22 +74,23 @@ class OAuthTwitter {
         $postfields .= '&oauth_signature=' . urlencode($oauth_signature); 
         $postfields .= '&oauth_version=1.0'; 
         
-        $response = cUrl_Initialize($postfields,$CURLOPT_SSL,TWITTER_API_GetULR("URL_ACCESS_TOKEN"),null,false);
+        $response = $Utils->cUrl_SEND_REQUEST($postfields, $CURLOPT_SSL,$Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_ACCESS_TOKEN"],null,false,true);
         
         if (!$response)
             return false;
-
+            
         parse_str($response, $result);
-        //preg_match('/oauth_token=[^&]*/', $response, $matches);
+        
         if (empty($result['oauth_token']) || empty($result['user_id'])) 
             return false;
-
-        //$this->USER_ID = $result['user_id'];
-
+               
+        $_SESSION['access_token'] = $result['oauth_token'];
+        $_SESSION['access_token_secret'] = $result['oauth_token_secret'];
         return true;
     }
 
     public function get_AcessToken($CURLOPT_SSL, $CONSUMER_KEY, $CONSUMER_SECRET) {
+        $Utils = new Utils;
         
         $headers = array( 
             "POST /oauth2/token HTTP/1.1", 
@@ -104,8 +100,8 @@ class OAuthTwitter {
             "Content-Type: application/x-www-form-urlencoded;charset=UTF-8", 
             "Content-Length: 29"
         ); 
-
-        $response = cUrl_Initialize("grant_type=client_credentials",$CURLOPT_SSL,TWITTER_API_GetULR("URL_TOKEN"),$headers,false);
+        
+        $response = $Utils->cUrl_SEND_REQUEST("grant_type=client_credentials",$CURLOPT_SSL,$Utils->Com_Const["API_HOST"].$Utils->Com_Const["URL_TOKEN"],$headers,false,true);
     
         if (!$response)
             return false;
@@ -116,7 +112,7 @@ class OAuthTwitter {
         if (empty($result)) 
             return false;
         
-        $_SESSION["access_token"] = $result;
+        $_SESSION["bearer_access_token"] = $result;
         return true;
     }
 }
