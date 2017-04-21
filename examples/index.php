@@ -9,9 +9,16 @@
         <div class="input-group extendedUL">
 
             <?php if (!isset($_SESSION["oauth_token"])&&!isset($_SESSION["oauth_token_secret"])): ?>
-            <span class="input-group-btn">
+            <span class="input-btn">
                 <a class="btn btn-primary" href="controllers/twitter_auth.php?callback=labs8">Зайти в твиттер <span class="glyphicon glyphicon-retweet"></span> </a>
             </span>
+                <?php if (!$twitterUser->initialized):?>
+                    <br>
+                    <hr/>
+            <span class="input-btn">
+                <a class="btn btn-primary" href="labs8?useXML=1">Открыть из XML<span class="glyphicon glyphicon-retweet"></span> </a>
+            </span>
+                    <?php endif;?>
 
             <?php elseif ($denied):?>
             <p>Ви таки отказались доверять мне.</p>
@@ -23,6 +30,14 @@
                     <p><strong> <?=$twitterUser->screen_name  ?> </strong></p>
                     <img width="128" height="128" src="<?= str_replace("_normal.",".",$twitterUser->profile_image_url)?>">
                 </div>
+                <br>
+                <hr/>
+                <span class="input-btn">
+                <a class="btn btn-primary" target="_blank" href="twitter/get_xml_user.php">Захуячить в XML <span class="glyphicon glyphicon-retweet"></span> </a>
+                    <hr/>
+                <a class="btn btn-primary" target="_blank" href="twitter/get_json_user.php">Захуячить в JSON <span class="glyphicon glyphicon-retweet"></span> </a>
+            </span>
+
             <?php endif;?>
 
         </div>
