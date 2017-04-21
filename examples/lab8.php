@@ -5,6 +5,7 @@
  * Date: 04.03.2017
  * Time: 4:39
  */
+require 'models/model_Table.php';
 require 'twitter/TwitterManager.php';
 require 'twitter_classes/TwitterUser.php';
 
@@ -14,7 +15,7 @@ class Controller_Labs8 Extends Controller_Base
     public $layouts = "skeleton";
     public $twitterUser;
     private $twitter_manager;
-  
+    public $data;
     // главный экшен
     // если в url нет явно указанного экшена, то по дефолту вызывается index
     private $twitter_auth_denied=false;
@@ -35,10 +36,18 @@ class Controller_Labs8 Extends Controller_Base
             $this->drop_session();
         }
 
-        if (isset($_SESSION["access_token"]) && isset($_SESSION["access_token_secret"]))
+        if (isset($_SESSION["current_User"])&&isset($_SESSION["current_users_Manager"]))
+        {
+            $this->twitterUser=$_SESSION["current_User"];
+            $this->twitter_manager=$_SESSION["current_users_Manager"];
+
+            $this->GetUserRelations();
+        }
+        else if (isset($_SESSION["access_token"]) && isset($_SESSION["access_token_secret"]))
         {
             $this->twitter_manager=new TwitterManager(Utils::CONSUMER_KEY, Utils::CONSUMER_SECRET, Utils::URL_CALLBACK);
             $this->twitter_manager->initOauth($_SESSION["access_token"], $_SESSION["access_token_secret"]);
+
             if (isset($_COOKIE["user_id"])&&isset($_COOKIE["screen_name"]))
             {
                 $this->twitter_manager->_user_id=$_COOKIE["user_id"];
@@ -46,11 +55,10 @@ class Controller_Labs8 Extends Controller_Base
             }
 
             $this->getUser();
-            $followers = json_decode($this->getUserFollowers($this->twitterUser),true);
-            $this->twitterUser->followers = &$followers["users"];
-            $followings= json_decode($this->getUserFollowed($this->twitterUser),true);
-            $this->twitterUser->followed=$followings["users"];
-            $this->twitterUser->advices[0]=json_decode($this->twitter_manager->GetUserByScreenName("YebaTu"),true);
+            $_SESSION["current_User"]=$this->twitterUser;
+            $_SESSION["current_users_Manager"]=$this->twitter_manager;
+
+            $this->GetUserRelations();
         }
         else if (isset($_GET["oauth_verifier"])&&isset($_GET["oauth_token"]))
         {
@@ -73,6 +81,18 @@ class Controller_Labs8 Extends Controller_Base
             $this->template->vars('debug', $mismatchedVars);
     }
 
+
+    public function GetUserRelations()
+    {
+        $followers = json_decode($this->getUserFollowers($this->twitterUser),true);
+        $this->twitterUser->followers = &$followers["users"];
+        $followings= json_decode($this->getUserFollowed($this->twitterUser),true);
+        $this->twitterUser->followed=$followings["users"];
+
+        $this->twitterUser->advices[0]=json_decode($this->twitter_manager->GetUserByScreenName("YebaTu"),true);
+        $this->twitterUser->advices[1]=json_decode($this->twitter_manager->GetUserByScreenName("kamen_v_lesu"),true);
+    }
+
     private function getUserFollowers(&$theUser)
     {
         return $this->twitter_manager->getUserFollowers($theUser->screen_name);
@@ -80,6 +100,12 @@ class Controller_Labs8 Extends Controller_Base
     private function getUserFollowed(&$theUser)
     {
         return $this->twitter_manager->getUsersFollowings($theUser->screen_name, -1, 100);
+    }
+
+    function db_connect(&$DBH)
+    {
+        try {$DBH=new PDO("mysql:host=localhost;dbname=demo_db","root","");}
+        catch(PDOException $e) {die ('<br>error code: pizdec' . $e->getMessage());}
     }
 
     function drop_session()
